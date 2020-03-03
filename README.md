@@ -7,7 +7,7 @@ The textobj for between 2 charcters.
 ```
 abXcd|efYgh
 ```
-You can type `v`(to visual mode) and `a2XY` to select ```XcdefY```
+You can type `v`(to visual mode) and `a2XY` to select ```XcdefY```.
 
 ## Install
 (vim-textobj-twochars depends on [vim-textobj-user](https://github.com/kana/vim-textobj-user).)
