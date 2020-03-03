@@ -10,9 +10,13 @@ abXcd|efYgh
 You can type `v`(to visual mode) and `a2XY` to select ```XcdefY```
 
 ## Install
+(vim-textobj-twochars depends on [vim-textobj-user](https://github.com/kana/vim-textobj-user).)
+
+dein
 ```vimscript
 call dein#add('utubo/vim-textobj-twochars')
 ```
+
 
 ## Mapping
 ```vimscript
