@@ -1,9 +1,9 @@
 # vim-textobj-twochars
 
-Textobj for between 2 charcters.
+The textobj for between 2 charcters.
 
 ## Example
-("|" is cursor.)
+(`|` is cursor.)
 ```
 abXcd|efYgh
 ```
@@ -23,6 +23,6 @@ call dein#add('utubo/vim-textobj-twochars')
 call textobj#user#map('twochars', {'-': {'select-a': 'a2', 'select-i': 'i2'}})
 ```
 
-## Licenses
+## License
 Released under the [MIT license](https://opensource.org/licenses/mit-license.php).  
 Copyright 2020 utubo  
