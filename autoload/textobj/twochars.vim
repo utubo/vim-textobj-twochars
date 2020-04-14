@@ -15,64 +15,85 @@ function! s:msg(text)
   return 0
 endfunction
 
+function! s:is_reversed(head, tail)
+  return a:tail[1] < a:head[1] || a:tail[1] == a:head[1] && a:tail[2] < a:head[2]
+endfunction
+
 function! s:select(is_inner, cursorline)
   echoh Question | echo 'Input 2 chars: ' | echoh None
   let l:org = getpos('.')
   let l:stopline = a:cursorline ? l:org[1] : 0
 
   " input the head
-  let [l:head, l:head_expr] = s:input()
-  if l:head == ''
+  let [l:c, l:head_expr] = s:input()
+  if l:c ==? ''
     return s:msg('Canceled.')
   endif
-  redraw | echo 'Between "' . l:head . '" and '
+  redraw | echo 'Between "' . l:c . '" and '
   " search the head
   if !search(l:head_expr, 'bcW', l:stopline) &&
    \ l:stopline && !search(l:head_expr, 'c', l:stopline)
     return s:msg('Not found.')
   endif
-  let l:head_pos = getpos('.')
+  let l:head = getpos('.')
 
   " input the tail
-  let [l:tail, l:expr] = s:input()
-  if l:tail == ''
+  let [l:c, l:expr] = s:input()
+  if l:c ==? ''
     return s:msg('Canceled.')
   endif
-  echon '"' . l:tail .'"'
+  echon '"' . l:c .'"'
   " search the tail
   call setpos('.', l:org)
-  if l:head == l:tail && l:head_pos == l:org
+  if l:head_expr ==? l:expr && l:head == l:org
     if !search(l:expr, 'W',  l:org[1]) &&
      \ !search(l:expr, 'bW', l:stopline) &&
      \ !l:stopline && !search(l:expr, 'W') &&
      \ !l:stopline && !search(l:expr, 'bW')
         return s:msg('Not found.')
     endif
-    let l:tail_pos = getpos('.')
-  else
-    call setpos('.', l:org)
-    if !search(l:expr, 'c', l:stopline) &&
-     \ l:stopline && !search(l:expr, 'b', l:stopline)
+    let l:tail = getpos('.')
+  elseif l:stopline
+    if !search(l:expr, 'c', l:stopline) && !search(l:expr, 'bc', l:stopline)
       return s:msg('Not found.')
     endif
-    let l:tail_pos = getpos('.')
-    if l:stopline && l:tail_pos[2] < l:head_pos[2]
-      if !search(l:head_expr, 'b', l:stopline)
+    let l:tail = getpos('.')
+    if l:tail[2] == l:head[2]
+      if !search(l:head_expr, l:head[2] < l:org[2] ? 'b' : '', l:stopline)
         return s:msg('Not found.')
       endif
-      let l:head_pos = getpos('.')
+      let l:head = getpos('.')
     endif
+  else
+    if !search(l:expr, 'c')
+      return s:msg('Not found.')
+    endif
+    let l:tail = getpos('.')
   endif
 
   if a:is_inner
-    normal! h
-    let l:tail_pos = getpos('.')
-    call setpos('.', l:head_pos)
+    if s:is_reversed(l:head, l:tail)
+      let [l:head, l:tail] = [l:tail, l:head]
+    endif
+    call setpos('.', l:head)
     normal! l
-    let l:head_pos = getpos('.')
+    if getpos('.')[2] == l:head[2]
+      normal! j0
+    endif
+    let l:head = getpos('.')
+    call setpos('.', l:tail)
+    normal! h
+    if getpos('.')[2] == l:tail[2]
+      normal! k$
+    endif
+    let l:tail = getpos('.')
+    if s:is_reversed(l:head, l:tail)
+      " it's empty.
+      return 0
+    endif
   endif
 
-  return ['v', l:head_pos, l:tail_pos]
+  return ['v', l:head, l:tail]
 endfunction
 
 function! textobj#twochars#select_a()
