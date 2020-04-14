@@ -1,13 +1,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:input()
+function! s:input(text)
   let l:c = nr2char(getchar())
   if l:c !~ '[[:print:]]'
-    return ['', '']
+    return ''
   endif
+  echon printf(a:text, l:c)
   let l:expr = l:c == '\' ? '\\' : ('\V' . l:c)
-  return [l:c, l:expr]
+  return l:expr
 endfunction
 
 function! s:msg(text)
@@ -25,31 +26,29 @@ function! s:select(is_inner, cursorline)
   let l:stopline = a:cursorline ? l:org[1] : 0
 
   " input the head
-  let [l:c, l:head_expr] = s:input()
-  if l:c ==? ''
+  let l:head_expr = s:input('Between "%s" and ')
+  if l:head_expr ==? ''
     return s:msg('Canceled.')
   endif
-  redraw | echo 'Between "' . l:c . '" and '
   " search the head
   if !search(l:head_expr, 'bcW', l:stopline) &&
-   \ l:stopline && !search(l:head_expr, 'c', l:stopline)
+   \ (!l:stopline || !search(l:head_expr, 'c', l:stopline))
     return s:msg('Not found.')
   endif
   let l:head = getpos('.')
 
   " input the tail
-  let [l:c, l:expr] = s:input()
-  if l:c ==? ''
+  let l:expr = s:input('"%s"')
+  if l:expr ==? ''
     return s:msg('Canceled.')
   endif
-  echon '"' . l:c .'"'
   " search the tail
   call setpos('.', l:org)
   if l:head_expr ==? l:expr && l:head == l:org
     if !search(l:expr, 'W',  l:org[1]) &&
      \ !search(l:expr, 'bW', l:stopline) &&
-     \ !l:stopline && !search(l:expr, 'W') &&
-     \ !l:stopline && !search(l:expr, 'bW')
+     \ (l:stopline || !search(l:expr, 'W')) &&
+     \ (l:stopline || !search(l:expr, 'bW'))
         return s:msg('Not found.')
     endif
     let l:tail = getpos('.')
