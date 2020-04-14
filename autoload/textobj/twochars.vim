@@ -20,6 +20,10 @@ function! s:is_reversed(head, tail)
   return a:tail[1] < a:head[1] || a:tail[1] == a:head[1] && a:tail[2] < a:head[2]
 endfunction
 
+function! s:search_both(expr, flag, stopline)
+  return search(a:expr, a:flag, a:stopline) || search(a:expr, a:flag . 'b', a:stopline)
+endfunction
+
 function! s:select(is_inner, cursorline)
   echoh Question | echo 'Input 2 chars: ' | echoh None
   let l:org = getpos('.')
@@ -43,17 +47,10 @@ function! s:select(is_inner, cursorline)
     return s:msg('Canceled.')
   endif
   " search the tail
+  let l:is_on_samechar = l:head_expr ==? l:expr && l:head == l:org
   call setpos('.', l:org)
-  if l:head_expr ==? l:expr && l:head == l:org
-    if !search(l:expr, 'W',  l:org[1]) &&
-     \ !search(l:expr, 'bW', l:stopline) &&
-     \ (l:stopline || !search(l:expr, 'W')) &&
-     \ (l:stopline || !search(l:expr, 'bW'))
-        return s:msg('Not found.')
-    endif
-    let l:tail = getpos('.')
-  elseif l:stopline
-    if !search(l:expr, 'c', l:stopline) && !search(l:expr, 'bc', l:stopline)
+  if l:stopline
+    if !s:search_both(l:expr, l:is_on_samechar ? 'W': 'cW', l:stopline)
       return s:msg('Not found.')
     endif
     let l:tail = getpos('.')
@@ -64,7 +61,9 @@ function! s:select(is_inner, cursorline)
       let l:head = getpos('.')
     endif
   else
-    if !search(l:expr, 'c')
+    if l:is_on_samechar && !s:search_both(l:expr, 'W', l:org[1]) && !s:search_both(l:expr, 'W')
+      return s:msg('Not found.')
+    elseif !search(l:expr, 'c')
       return s:msg('Not found.')
     endif
     let l:tail = getpos('.')
