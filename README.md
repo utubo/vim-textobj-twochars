@@ -86,7 +86,7 @@ call textobj#user#plugin('twocharscursorline', {
 ```
 
 Mapping `a2` and `i2` to select on the cursorline,  
-and 'A2' and `I2` to select on multiline mode.
+and `A2` and `I2` to select on multiline mode.
 ```vimscript
 let g:textobj_twochars_select_on_cursor_line=1
 call textobj#user#plugin('twocharsmultiline', {
