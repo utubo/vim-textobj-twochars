@@ -47,10 +47,11 @@ You can press `va2lo` to select `lo wo`.
 
 
 ## Note
-When press same characters on the cursor, vim-textobj-twochars searches the tail from
-1. In the current line and after the cursor  
-2. In the current line and before the cursor  
-3. After the current line  
+- vim-textobj-twochars does not support a nested pair.
+- When press same characters on the cursor, vim-textobj-twochars searches the tail from
+  1. In the current line and after the cursor  
+  2. In the current line and before the cursor  
+  3. After the current line  
 
 Exmaple1:
 ```
