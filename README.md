@@ -72,7 +72,7 @@ You can press `va2""` to select `"; set $b = @"`.
 ## Deprecated
 
 Mapping `A2` and `I2` to select on the cursorline,  
-and 'a2' and `i2` to select on multiline mode.
+and `a2` and `i2` to select on multiline mode.
 ```vimscript
 let g:textobj_twochars_select_on_cursor_line=0
 call textobj#user#plugin('twocharscursorline', {
