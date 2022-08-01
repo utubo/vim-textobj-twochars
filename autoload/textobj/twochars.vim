@@ -12,7 +12,7 @@ function! s:input(text)
 endfunction
 
 function! s:msg(text)
-  redraw | echo a:text
+  redraw | echo a:text | redraw
   return 0
 endfunction
 
@@ -25,7 +25,7 @@ function! s:search_both(expr, flag, stopline)
 endfunction
 
 function! s:select(is_inner, cursorline)
-  echoh Question | echo 'Input 2 chars: ' | echoh None
+  echoh Question | echon 'Input 2 chars: ' | echoh None
   let l:org = getpos('.')
   let l:stopline = a:cursorline ? l:org[1] : 0
 
